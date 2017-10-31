@@ -1,12 +1,13 @@
 var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	layers: [],
 	//crs: L.CRS.EPSG3395,
-	center: new L.LatLng(53.08, 106.12),
 	attributionControl: true,
 	zoomControl: true,
 	scrollWheelZoom: true,
-	zoom: 4
+	center: new L.LatLng(56.304348, 105.84228),
+	zoom: 6
 });
+map.zoomControl.setPosition('bottomleft');
 
 var firesOverlay = L.featureGroup([])
     .bindPopup('Hello world!')
