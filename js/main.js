@@ -1,6 +1,10 @@
+var curDate = new Date(Date.now());
+
+var dateBegin = new Date(Date.UTC(curDate.getFullYear(), curDate.getMonth(), curDate.getDate())),
+	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24);
+
 var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	layers: [],
-	//crs: L.CRS.EPSG3395,
 	attributionControl: true,
 	zoomControl: true,
 	scrollWheelZoom: true,
@@ -12,6 +16,54 @@ map.zoomControl.setPosition('bottomleft');
 var firesOverlay = L.featureGroup([])
     .bindPopup('Hello world!')
     .on('click', function() { alert('Clicked on a member of the group!'); });
+
+var currentBbox = null;
+var getItems = function(beg, end) {
+	dateBegin = beg || dateBegin;
+	dateEnd = end || dateEnd;
+console.log(beg, end, currentBbox);
+	var url = '//sender.kosmosnimki.ru/irk-fires/hotspots';
+	url += '/' + parseInt(dateBegin.getTime() / 1000);
+	url += '/' + parseInt(dateEnd.getTime() / 1000);
+	url += '?bbox=' + JSON.stringify(currentBbox);
+	
+	// fetch(encodeURI(url), {
+		// mode: 'cors',
+		// credentials: 'include'
+	// })
+		// .then(function(response) { return response.json(); })
+		// .then(function(json) {
+			// console.log('dddddd', json);
+		// });
+		
+	var data = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[116.608,53.648]},"properties":{"id":2277654,"brightness":307.6,"satellite":"A","confidence":57.0,"frp":15.8,"daynight":"D","ts_utc":1509425100}}]};
+	var geo = L.geoJSON(data);
+	firesOverlay.clearLayers();
+	firesOverlay.addLayer(geo);
+		
+	// http://sender.kosmosnimki.ru/irk-fires/hotspots/1509235200/1509321600?bbox={%22type%22:%22Polygon%22,%22coordinates%22:[[[83.671875,48.922499263758255],[83.671875,64.848937263579472],[122.958984375,64.848937263579472],[122.958984375,48.922499263758255],[83.671875,48.922499263758255]]]}
+};
+var updateBbox = function() {
+	var screenBounds = map.getBounds(),
+		p1 = screenBounds.getNorthWest(),
+		p2 = screenBounds.getSouthEast();
+
+	currentBbox = {
+		type: 'Polygon',
+		coordinates:[
+			[
+				[p1.lng, p1.lat],
+				[p2.lng, p1.lat],
+				[p2.lng, p2.lat],
+				[p1.lng, p2.lat],
+				[p1.lng, p1.lat]
+			]
+		]
+	};
+	getItems();
+};
+map.on('moveend', updateBbox);
+updateBbox();
 
 var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	baseLayers = {
@@ -26,9 +78,8 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 baseLayers['Карта'].addTo(map);
 L.control.layers(baseLayers, overlayes).addTo(map);
 
-if (location.search.indexOf('irk=1') !== -1) {
-	overlayes['Граница Иркутской обл.'].addTo(map);
-}
+overlayes['Граница Иркутской обл.'].addTo(map);
+firesOverlay.addTo(map);
 
 // nsGmx.GmxWidgetMixin = {
 var gmxWidgetMixin = {
@@ -85,9 +136,6 @@ var calendarContainerControl = new CalendarContainerControl({
 
 map.addControl(calendarContainerControl);
 
-var dateBegin = new Date(Date.UTC(2011, 7, 10)),
-	dateEnd = new Date(Date.UTC(2011, 7, 20));
-
 var calendar = new nsGmx.CalendarWidget('calendarContainer', {
 	container: 'calendar',
 	dateFormat: 'mm-dd-yy',
@@ -100,16 +148,13 @@ var calendar = new nsGmx.CalendarWidget('calendarContainer', {
 	showTime: true
 });
 
-$(calendar).on('change', function() {
-	console.log('change', calendar.getDateBegin(), calendar.getDateEnd());
-});
+// $(calendar).on('change', function() {
+	// console.log('change', calendar.getDateBegin(), calendar.getDateEnd());
+// });
 
 $(calendar).on('datechange', function() {
-	console.log('datechange', calendar.getDateBegin(), calendar.getDateEnd());
+	// console.log('datechange', calendar.getDateBegin(), calendar.getDateEnd());
+	getItems(calendar.getDateBegin(), calendar.getDateEnd());
 });
-
-var getItems = function(beg, end) {
-	// http://sender.kosmosnimki.ru/irk-fires/hotspots/1509235200/1509321600?bbox={%22type%22:%22Polygon%22,%22coordinates%22:[[[83.671875,48.922499263758255],[83.671875,64.848937263579472],[122.958984375,64.848937263579472],[122.958984375,48.922499263758255],[83.671875,48.922499263758255]]]}
-};
 
 // firesOverlay
