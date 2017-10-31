@@ -25,6 +25,10 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 baseLayers['Карта'].addTo(map);
 L.control.layers(baseLayers, overlayes).addTo(map);
 
+if (location.search.indexOf('irk=1') !== -1) {
+	overlayes['Граница Иркутской обл.'].addTo(map);
+}
+
 // nsGmx.GmxWidgetMixin = {
 var gmxWidgetMixin = {
     getContainer: function() {
