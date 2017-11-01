@@ -27,10 +27,10 @@ self.addEventListener('fetch', function(event) {
     var cached = caches.match(request)
       .then(function (r) {
         if (r) {
-          console.log('Cache hit', r);
+          // console.log('Cache hit', r);
           return r;
         }
-        console.log('Cache missed', request);
+        // console.log('Cache missed', request);
         return fetchAndCache(request);
       })
       // Fallback to offline tile if never cached.
@@ -51,7 +51,7 @@ function fetchAndCache(request) {
     .then(function (response) {
       return caches.open(CACHE_NAME)
         .then(function(cache) {
-          console.log('Store in cache', response);
+          // console.log('Store in cache', response);
           cache.put(request, response.clone());
           return response;
         });

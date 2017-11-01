@@ -10,7 +10,7 @@ var myIcon = L.icon({
 
 if (location.search.indexOf('sw=1') !== -1) {
 	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('./js/gmx-sw1.js')
+		navigator.serviceWorker.register('../gmx-sw1.js')
 		  .then(function(registration) {
 			console.log('ServiceWorker registration successful with scope: ', registration.scope);
 		  })
