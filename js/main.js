@@ -3,11 +3,10 @@ var curDate = new Date(Date.now());
 var dateBegin = new Date(Date.UTC(curDate.getFullYear(), curDate.getMonth(), curDate.getDate())),
 	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24);
 
-// L.Icon.Default = L.Icon.Default.extend({
-	// options: {
-		// iconUrl: 'fire.png'
-	// }
-// });
+var myIcon = L.icon({
+    iconUrl: 'css/fire.png',
+    popupAnchor: [6, 0]
+});
 	
 var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	layers: [],
@@ -20,35 +19,55 @@ var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 map.zoomControl.setPosition('bottomleft');
 
 var firesOverlay = L.featureGroup([])
-    .bindPopup('Hello world!')
-    .on('click', function() { alert('Clicked on a member of the group!'); });
+    .bindPopup()
+    .on('popupopen ', function(ev) {
+		console.log('Clicked on a member of the group!', ev);
+		var marker = ev.layer,
+			props = marker.feature.properties,
+			arr = Object.keys(props).map(function(key) {
+				return '<div><b>' + key + '</b>: ' + props[key] + '</div>';
+			}),
+			popup = ev.popup;
+		
+		popup.setContent(arr.join('\n'));
+	});
 
 var currentBbox = null;
 var getItems = function(beg, end) {
 	dateBegin = beg || dateBegin;
 	dateEnd = end || dateEnd;
-// console.log(beg, end, currentBbox);
+	// console.log(beg, end, currentBbox);
 	var url = '//sender.kosmosnimki.ru/irk-fires/hotspots';
 	url += '/' + parseInt(dateBegin.getTime() / 1000);
 	url += '/' + parseInt(dateEnd.getTime() / 1000);
 	url += '?bbox=' + JSON.stringify(currentBbox);
 	
-console.log('url', url);
 	fetch(encodeURI(url), {
 		mode: 'cors',
 		credentials: 'include'
 	})
 		.then(function(response) { return response.json(); })
 		.then(function(json) {
-			console.log('dddddd', json);
+			// console.log('json', json);
+			var geo = L.geoJSON(json);
+			geo.eachLayer(function (marker) {
+				marker.setIcon(myIcon);
+			});
+			firesOverlay.clearLayers();
+			firesOverlay.addLayer(geo);
 		});
 		
 	// var data = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[116.608,53.648]},"properties":{"id":2277654,"brightness":307.6,"satellite":"A","confidence":57.0,"frp":15.8,"daynight":"D","ts_utc":1509425100}}]};
-	// var geo = L.geoJSON(data);
+	// var geo = L.geoJSON(data, {
+			// style: function (feature) {
+				// return {iconUrl: 'fire.png', className: 'fire'};
+			// }
+		// });
+	// geo.eachLayer(function (layer) {
+		// layer.setIcon(myIcon);
+	// });
 	// firesOverlay.clearLayers();
 	// firesOverlay.addLayer(geo);
-		
-	// http://sender.kosmosnimki.ru/irk-fires/hotspots/1509235200/1509321600?bbox={%22type%22:%22Polygon%22,%22coordinates%22:[[[83.671875,48.922499263758255],[83.671875,64.848937263579472],[122.958984375,64.848937263579472],[122.958984375,48.922499263758255],[83.671875,48.922499263758255]]]}
 };
 var updateBbox = function() {
 	var screenBounds = map.getBounds(),
@@ -92,12 +111,12 @@ L.control.layers({}, overlayes).addTo(map);
 L.control.iconLayers([
 	{
         title: 'Карта',
-        icon: './Leaflet-IconLayers/examples/icons/openstreetmap_blackandwhite.png',
+        icon: './css/basemap_osm_ru.png',
         layer: baseLayers['Карта']
     },
 	{
         title: 'Спутник',
-        icon: './Leaflet-IconLayers/examples/icons/openstreetmap_mapnik.png',
+        icon: './css/basemap_satellite.png ',
         layer: baseLayers['Спутник']
     }
 ], {position: 'bottomright'}).addTo(map);
@@ -172,13 +191,6 @@ var calendar = new nsGmx.CalendarWidget('calendarContainer', {
 	showTime: true
 });
 
-// $(calendar).on('change', function() {
-	// console.log('change', calendar.getDateBegin(), calendar.getDateEnd());
-// });
-
 $(calendar).on('datechange', function() {
-	// console.log('datechange', calendar.getDateBegin(), calendar.getDateEnd());
 	getItems(calendar.getDateBegin(), calendar.getDateEnd());
 });
-
-// firesOverlay
