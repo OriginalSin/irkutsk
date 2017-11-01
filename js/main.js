@@ -33,10 +33,8 @@ var firesOverlay = L.featureGroup([])
 	});
 
 var currentBbox = null;
-var getItems = function(beg, end) {
-	dateBegin = beg || dateBegin;
-	dateEnd = end || dateEnd;
-	// console.log(beg, end, currentBbox);
+var getItems = function() {
+	//console.log(beg, end, currentBbox);
 	var url = '//sender.kosmosnimki.ru/irk-fires/hotspots';
 	url += '/' + parseInt(dateBegin.getTime() / 1000);
 	url += '/' + parseInt(dateEnd.getTime() / 1000);
@@ -182,15 +180,20 @@ map.addControl(calendarContainerControl);
 var calendar = new nsGmx.CalendarWidget('calendarContainer', {
 	container: 'calendar',
 	dateFormat: 'mm-dd-yy',
-	dateMin: new Date(Date.UTC(2011, 7, 1)),
-	dateMax: new Date(Date.UTC(2011, 7, 31)),
+	// dateMin: new Date(Date.UTC(2011, 7, 1)),
+	dateMax: dateEnd,
 	dateBegin: dateBegin,
 	dateEnd: dateEnd,
-	minimized: false,
+	minimized: true,
 	showSwitcher: true,
 	showTime: true
 });
 
 $(calendar).on('datechange', function() {
-	getItems(calendar.getDateBegin(), calendar.getDateEnd());
+	dateBegin = calendar.getDateBegin();
+	dateEnd = calendar.getDateEnd();
+	if (dateBegin.getTime() === dateEnd.getTime()) {
+		dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24);
+	}
+	getItems(dateBegin, dateEnd);
 });
