@@ -1,5 +1,5 @@
 var CACHE_NAME = 'Sputnik';
-var OFFLINE_TILE = '../css/offline.png';
+var OFFLINE_TILE = './css/offline.png';
 
 console.log("SW startup");
 
