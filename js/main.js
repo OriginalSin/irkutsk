@@ -7,7 +7,21 @@ var myIcon = L.icon({
     iconUrl: 'css/fire.png',
     popupAnchor: [6, 0]
 });
-	
+
+if (location.search.indexOf('sw=1') !== -1) {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('./js/gmx-sw1.js')
+		  .then(function(registration) {
+			console.log('ServiceWorker registration successful with scope: ', registration.scope);
+		  })
+		  .catch(function(err) {
+			console.log('ServiceWorker registration failed: ', err);
+		  });
+	} else {
+		console.error('Your browser does not support Service Workers.');
+	}
+}
+
 var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	layers: [],
 	attributionControl: true,
