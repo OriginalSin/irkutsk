@@ -1,7 +1,6 @@
 var CACHE_NAME = 'Sputnik';
 var OFFLINE_TILE = '../css/offline.png';
 
-
 console.log("SW startup");
 
 self.addEventListener('install', function(event) {
@@ -41,7 +40,6 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(cached);
   }
 });
-
 
 //
 // Helper to fetch and store in cache.
