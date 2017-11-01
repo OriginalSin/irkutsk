@@ -69,7 +69,7 @@ var getItems = function() {
 			geo.eachLayer(function (marker) {
 				marker
 					.on('remove', function () {
-						map._popup.remove();
+						if (map._popup) map._popup.remove();
 					})
 					.setIcon(myIcon);
 			});
