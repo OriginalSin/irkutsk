@@ -3,6 +3,12 @@ var curDate = new Date(Date.now());
 var dateBegin = new Date(Date.UTC(curDate.getFullYear(), curDate.getMonth(), curDate.getDate())),
 	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24);
 
+// L.Icon.Default = L.Icon.Default.extend({
+	// options: {
+		// iconUrl: 'fire.png'
+	// }
+// });
+	
 var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	layers: [],
 	attributionControl: true,
@@ -21,25 +27,26 @@ var currentBbox = null;
 var getItems = function(beg, end) {
 	dateBegin = beg || dateBegin;
 	dateEnd = end || dateEnd;
-console.log(beg, end, currentBbox);
+// console.log(beg, end, currentBbox);
 	var url = '//sender.kosmosnimki.ru/irk-fires/hotspots';
 	url += '/' + parseInt(dateBegin.getTime() / 1000);
 	url += '/' + parseInt(dateEnd.getTime() / 1000);
 	url += '?bbox=' + JSON.stringify(currentBbox);
 	
-	// fetch(encodeURI(url), {
-		// mode: 'cors',
-		// credentials: 'include'
-	// })
-		// .then(function(response) { return response.json(); })
-		// .then(function(json) {
-			// console.log('dddddd', json);
-		// });
+console.log('url', url);
+	fetch(encodeURI(url), {
+		mode: 'cors',
+		credentials: 'include'
+	})
+		.then(function(response) { return response.json(); })
+		.then(function(json) {
+			console.log('dddddd', json);
+		});
 		
-	var data = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[116.608,53.648]},"properties":{"id":2277654,"brightness":307.6,"satellite":"A","confidence":57.0,"frp":15.8,"daynight":"D","ts_utc":1509425100}}]};
-	var geo = L.geoJSON(data);
-	firesOverlay.clearLayers();
-	firesOverlay.addLayer(geo);
+	// var data = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[116.608,53.648]},"properties":{"id":2277654,"brightness":307.6,"satellite":"A","confidence":57.0,"frp":15.8,"daynight":"D","ts_utc":1509425100}}]};
+	// var geo = L.geoJSON(data);
+	// firesOverlay.clearLayers();
+	// firesOverlay.addLayer(geo);
 		
 	// http://sender.kosmosnimki.ru/irk-fires/hotspots/1509235200/1509321600?bbox={%22type%22:%22Polygon%22,%22coordinates%22:[[[83.671875,48.922499263758255],[83.671875,64.848937263579472],[122.958984375,64.848937263579472],[122.958984375,48.922499263758255],[83.671875,48.922499263758255]]]}
 };
@@ -72,11 +79,28 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	},
 	overlayes = {
 		'Пожары': firesOverlay,
-		'Граница Иркутской обл.': L.geoJSON(irk)
+		'Граница Иркутской обл.': L.geoJSON(irk, {
+			style: function (feature) {
+				return {weight: 6, fill: false, color: 'blue'};
+			}
+		})
 	};
 
 baseLayers['Карта'].addTo(map);
-L.control.layers(baseLayers, overlayes).addTo(map);
+L.control.layers({}, overlayes).addTo(map);
+
+L.control.iconLayers([
+	{
+        title: 'Карта',
+        icon: './Leaflet-IconLayers/examples/icons/openstreetmap_blackandwhite.png',
+        layer: baseLayers['Карта']
+    },
+	{
+        title: 'Спутник',
+        icon: './Leaflet-IconLayers/examples/icons/openstreetmap_mapnik.png',
+        layer: baseLayers['Спутник']
+    }
+], {position: 'bottomright'}).addTo(map);
 
 overlayes['Граница Иркутской обл.'].addTo(map);
 firesOverlay.addTo(map);
