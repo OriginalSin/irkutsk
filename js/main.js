@@ -117,7 +117,8 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	url1 = protocol + '//maps.kosmosnimki.ru/TileService.ashx?LayerName=C598DBF5726945AFBEC937E086447DBF&map=5AE44B9616754357B39802C0620B2713&crs=epsg:3857&request=getTile&apiKey=6Q81IXBUQ7&z={z}&x={x}&y={y}',
 	bounds = location.search.indexOf('bounds=1') === -1,
 	baseLayers = {
-		'Карта': bounds ? L.tileLayer(url) : L.TileLayer.boundaryCanvas(url, {boundary: irk.features[0].geometry}),
+		// 'Карта': bounds ? L.tileLayer(url) : L.TileLayer.boundaryCanvas(url, {boundary: irk.features[0].geometry}),
+		'Карта': L.tileLayer(url),
 		'Спутник': bounds ? L.tileLayer(url1) : L.TileLayer.boundaryCanvas(url1, {boundary: irk.features[0].geometry})
 	},
 	overlayes = {
