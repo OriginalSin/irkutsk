@@ -25,7 +25,11 @@ var firesOverlay = L.featureGroup([])
 		var marker = ev.layer,
 			props = marker.feature.properties,
 			arr = Object.keys(props).map(function(key) {
-				return '<div><b>' + key + '</b>: ' + props[key] + '</div>';
+				var res = props[key];
+				if (key === 'ts_utc') {
+					res = new Date(1000 * res).toLocaleDateString();
+				}
+				return '<div>' + key + ': <b>' + res + '</b></div>';
 			}),
 			popup = ev.popup;
 		
@@ -38,7 +42,7 @@ var getItems = function() {
 	var url = '//sender.kosmosnimki.ru/irk-fires/hotspots';
 	url += '/' + parseInt(dateBegin.getTime() / 1000);
 	url += '/' + parseInt(dateEnd.getTime() / 1000);
-	url += '?bbox=' + JSON.stringify(currentBbox);
+	// url += '?bbox=' + JSON.stringify(currentBbox);
 	
 	fetch(encodeURI(url), {
 		mode: 'cors',
@@ -49,7 +53,11 @@ var getItems = function() {
 			// console.log('json', json);
 			var geo = L.geoJSON(json);
 			geo.eachLayer(function (marker) {
-				marker.setIcon(myIcon);
+				marker
+					.on('remove', function () {
+						map._popup.remove();
+					})
+					.setIcon(myIcon);
 			});
 			firesOverlay.clearLayers();
 			firesOverlay.addLayer(geo);
@@ -86,8 +94,9 @@ var updateBbox = function() {
 	};
 	getItems();
 };
-map.on('moveend', updateBbox);
-updateBbox();
+// map.on('moveend', updateBbox);
+// updateBbox();
+getItems();
 
 var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	baseLayers = {
