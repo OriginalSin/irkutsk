@@ -146,7 +146,7 @@ L.control.iconLayers([
     }
 ], {position: 'bottomright'}).addTo(map);
 
-overlayes['Граница Иркутской обл.'].addTo(map);
+// overlayes['Границы районов'].addTo(map);
 firesOverlay.addTo(map);
 
 // nsGmx.GmxWidgetMixin = {
