@@ -1,7 +1,8 @@
 var curDate = new Date(Date.now());
 
 var dateBegin = new Date(Date.UTC(curDate.getFullYear(), curDate.getMonth(), curDate.getDate())),
-	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24);
+	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24),
+	bboxFlag = location.search.indexOf('bbox=1') !== -1;
 
 var myIcon = L.icon({
     iconUrl: 'css/fire.png',
@@ -35,8 +36,9 @@ map.zoomControl.setPosition('bottomleft');
 var firesOverlay = L.featureGroup([])
     .bindPopup()
     .on('popupopen ', function(ev) {
-		console.log('Clicked on a member of the group!', ev);
+		// console.log('Clicked on a member of the group!', ev);
 		var marker = ev.layer,
+			_latlng = marker._latlng,
 			props = marker.feature.properties,
 			arr = Object.keys(props).map(function(key) {
 				var res = props[key];
@@ -47,7 +49,7 @@ var firesOverlay = L.featureGroup([])
 			}),
 			popup = ev.popup;
 		
-		popup.setContent(arr.join('\n'));
+		popup.setContent(arr.join('\n') + '<div>lat: <b>' + _latlng.lat + '</b></div>' + '<div>lng: <b>' + _latlng.lng + '</b></div>');
 	});
 
 var currentBbox = null;
@@ -76,18 +78,6 @@ var getItems = function() {
 			firesOverlay.clearLayers();
 			firesOverlay.addLayer(geo);
 		});
-		
-	// var data = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[116.608,53.648]},"properties":{"id":2277654,"brightness":307.6,"satellite":"A","confidence":57.0,"frp":15.8,"daynight":"D","ts_utc":1509425100}}]};
-	// var geo = L.geoJSON(data, {
-			// style: function (feature) {
-				// return {iconUrl: 'fire.png', className: 'fire'};
-			// }
-		// });
-	// geo.eachLayer(function (layer) {
-		// layer.setIcon(myIcon);
-	// });
-	// firesOverlay.clearLayers();
-	// firesOverlay.addLayer(geo);
 };
 var updateBbox = function() {
 	var screenBounds = map.getBounds(),
@@ -108,9 +98,12 @@ var updateBbox = function() {
 	};
 	getItems();
 };
-// map.on('moveend', updateBbox);
-// updateBbox();
-getItems();
+if (bboxFlag) {
+	map.on('moveend', updateBbox);
+	updateBbox();
+} else {
+	getItems();
+}
 
 var regOverlay = L.featureGroup([])
     .bindPopup()
@@ -253,5 +246,9 @@ $(calendar).on('datechange', function() {
 	if (dateBegin.getTime() === dateEnd.getTime()) {
 		dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24);
 	}
-	getItems(dateBegin, dateEnd);
+	if (bboxFlag) {
+		updateBbox();
+	} else {
+		getItems(dateBegin, dateEnd);
+	}
 });
