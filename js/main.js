@@ -58,7 +58,9 @@ var getItems = function() {
 	var url = '//sender.kosmosnimki.ru/irk-fires/hotspots';
 	url += '/' + parseInt(dateBegin.getTime() / 1000);
 	url += '/' + parseInt(dateEnd.getTime() / 1000);
-	// url += '?bbox=' + JSON.stringify(currentBbox);
+	if (bboxFlag) {
+		url += '?bbox=' + JSON.stringify(currentBbox);
+	}
 	
 	fetch(encodeURI(url), {
 		mode: 'cors',
