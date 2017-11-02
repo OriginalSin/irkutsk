@@ -119,13 +119,13 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	baseLayers = {
 		// 'Карта': bounds ? L.tileLayer(url) : L.TileLayer.boundaryCanvas(url, {boundary: irk.features[0].geometry}),
 		'Карта': L.tileLayer(url),
-		'Спутник': bounds ? L.tileLayer(url1) : L.TileLayer.boundaryCanvas(url1, {boundary: irk.features[0].geometry})
+		'Спутник': bounds ? L.tileLayer(url1) : L.TileLayer.boundaryCanvas(url1, {boundary: clipJSON})
 	},
 	overlayes = {
 		'Пожары': firesOverlay,
 		'Граница Иркутской обл.': L.geoJSON(irk, {
 			style: function (feature) {
-				return {weight: 6, fill: false, color: 'blue'};
+				return {weight: 2, fill: false, color: 'blue'};
 			}
 		})
 	};
