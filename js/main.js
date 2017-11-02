@@ -112,6 +112,29 @@ var updateBbox = function() {
 // updateBbox();
 getItems();
 
+var regOverlay = L.featureGroup([])
+    .bindPopup()
+    .on('popupopen ', function(ev) {
+		console.log('Clicked on a member of the group!', ev);
+		var marker = ev.layer,
+			props = marker.feature.properties,
+			arr = Object.keys(props).map(function(key) {
+				var res = props[key];
+				if (key === 'ts_utc') {
+					res = new Date(1000 * res).toLocaleDateString();
+				}
+				return '<div>' + key + ': <b>' + res + '</b></div>';
+			}),
+			popup = ev.popup;
+		
+		popup.setContent(arr.join('\n'));
+	});
+regOverlay.addLayer(L.geoJSON(irk, {
+	style: function (feature) {
+		return {weight: 2, fillOpacity: 0.05, color: 'blue'};
+	}
+}));
+
 var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	url = protocol + '//tilessputnik.ru/{z}/{x}/{y}.png',
 	url1 = protocol + '//maps.kosmosnimki.ru/TileService.ashx?LayerName=C598DBF5726945AFBEC937E086447DBF&map=5AE44B9616754357B39802C0620B2713&crs=epsg:3857&request=getTile&apiKey=6Q81IXBUQ7&z={z}&x={x}&y={y}',
@@ -123,11 +146,7 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	},
 	overlayes = {
 		'Пожары': firesOverlay,
-		'Границы районов': L.geoJSON(irk, {
-			style: function (feature) {
-				return {weight: 2, fill: false, color: 'blue'};
-			}
-		}),
+		'Границы районов': regOverlay,
 		'Кадастр': L.tileLayer.wms('//pkk5.rosreestr.ru/arcgis/rest/services/Cadastre/Cadastre/MapServer/export', {
 			layers: 'show:0,1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,23,24,29,30,31,32,33,34,35,38,39',
 			format: 'PNG32',
