@@ -123,7 +123,7 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	},
 	overlayes = {
 		'Пожары': firesOverlay,
-		'Граница Иркутской обл.': L.geoJSON(irk, {
+		'Границы районов': L.geoJSON(irk, {
 			style: function (feature) {
 				return {weight: 2, fill: false, color: 'blue'};
 			}
