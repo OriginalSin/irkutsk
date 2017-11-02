@@ -2,7 +2,7 @@ var curDate = new Date(Date.now());
 
 var dateBegin = new Date(Date.UTC(curDate.getFullYear(), curDate.getMonth(), curDate.getDate())),
 	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24),
-	bboxFlag = location.search.indexOf('bbox=1') !== -1;
+	bboxFlag = location.search.indexOf('bbox=1') === -1;
 
 var myIcon = L.icon({
     iconUrl: 'css/fire.png',
