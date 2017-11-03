@@ -2,7 +2,7 @@ var curDate = new Date(Date.now());
 
 var dateBegin = new Date(Date.UTC(curDate.getFullYear(), curDate.getMonth(), curDate.getDate())),
 	dateEnd = new Date(dateBegin.getTime() + 1000*60*60*24),
-	bboxFlag = location.search.indexOf('bbox=1') === -1;
+	bboxFlag = location.search.indexOf('bbox=1') !== -1;
 
 var myIcon = L.icon({
     iconUrl: 'css/fire.png',
@@ -32,7 +32,7 @@ var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	zoom: 6
 });
 map.zoomControl.setPosition('bottomleft');
-
+/*
 var firesOverlay = L.featureGroup([])
     .bindPopup()
     .on('popupopen ', function(ev) {
@@ -51,6 +51,8 @@ var firesOverlay = L.featureGroup([])
 		
 		popup.setContent(arr.join('\n') + '<div>lat: <b>' + _latlng.lat + '</b></div>' + '<div>lng: <b>' + _latlng.lng + '</b></div>');
 	});
+*/
+var firesOverlay = L.markerClusterGroup();
 
 var currentBbox = null;
 var getItems = function() {
@@ -72,6 +74,23 @@ var getItems = function() {
 			var geo = L.geoJSON(json);
 			geo.eachLayer(function (marker) {
 				marker
+					.bindPopup()
+					.on('popupopen ', function(ev) {
+						// console.log('Clicked on a member of the group!', ev);
+						var target = ev.target,
+							_latlng = target._latlng,
+							props = target.feature.properties,
+							arr = Object.keys(props).map(function(key) {
+								var res = props[key];
+								if (key === 'ts_utc') {
+									res = new Date(1000 * res).toLocaleDateString();
+								}
+								return '<div>' + key + ': <b>' + res + '</b></div>';
+							}),
+							popup = ev.popup;
+						
+						popup.setContent(arr.join('\n') + '<div>lat: <b>' + _latlng.lat + '</b></div>' + '<div>lng: <b>' + _latlng.lng + '</b></div>');
+					})
 					.on('remove', function () {
 						if (map._popup) map._popup.remove();
 					})
@@ -110,7 +129,7 @@ if (bboxFlag) {
 var regOverlay = L.featureGroup([])
     .bindPopup()
     .on('popupopen ', function(ev) {
-		console.log('Clicked on a member of the group!', ev);
+		//console.log('Clicked on a member of the group!', ev);
 		var marker = ev.layer,
 			props = marker.feature.properties,
 			arr = Object.keys(props).map(function(key) {
