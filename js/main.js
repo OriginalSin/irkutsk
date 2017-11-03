@@ -32,26 +32,7 @@ var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 	zoom: 6
 });
 map.zoomControl.setPosition('bottomleft');
-/*
-var firesOverlay = L.featureGroup([])
-    .bindPopup()
-    .on('popupopen ', function(ev) {
-		// console.log('Clicked on a member of the group!', ev);
-		var marker = ev.layer,
-			_latlng = marker._latlng,
-			props = marker.feature.properties,
-			arr = Object.keys(props).map(function(key) {
-				var res = props[key];
-				if (key === 'ts_utc') {
-					res = new Date(1000 * res).toLocaleDateString();
-				}
-				return '<div>' + key + ': <b>' + res + '</b></div>';
-			}),
-			popup = ev.popup;
-		
-		popup.setContent(arr.join('\n') + '<div>lat: <b>' + _latlng.lat + '</b></div>' + '<div>lng: <b>' + _latlng.lng + '</b></div>');
-	});
-*/
+
 var firesOverlay = L.markerClusterGroup();
 
 var currentBbox = null;
@@ -63,7 +44,8 @@ var getItems = function() {
 	if (bboxFlag) {
 		url += '?bbox=' + JSON.stringify(currentBbox);
 	}
-	
+	map.spin(true);
+
 	fetch(encodeURI(url), {
 		mode: 'cors',
 		credentials: 'include'
@@ -98,6 +80,7 @@ var getItems = function() {
 			});
 			firesOverlay.clearLayers();
 			firesOverlay.addLayer(geo);
+			map.spin(false);
 		});
 };
 var updateBbox = function() {
@@ -238,9 +221,16 @@ var calendarContainerControl = new CalendarContainerControl({
 
 map.addControl(calendarContainerControl);
 
+$.datepicker.regional['ru'] = {
+	monthNamesShort: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+	dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+	firstDay: 1,
+};
+$.datepicker.setDefaults($.datepicker.regional['ru']);
+
 var calendar = new nsGmx.CalendarWidget('calendarContainer', {
 	container: 'calendar',
-	dateFormat: 'mm-dd-yy',
+	dateFormat: 'dd.mm.yy',
 	// dateMin: new Date(Date.UTC(2011, 7, 1)),
 	dateMax: dateEnd,
 	dateBegin: dateBegin,
