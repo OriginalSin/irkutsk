@@ -73,9 +73,9 @@ var getItems = function() {
 						
 						popup.setContent(arr.join('\n') + '<div>lat: <b>' + _latlng.lat + '</b></div>' + '<div>lng: <b>' + _latlng.lng + '</b></div>');
 					})
-					.on('remove', function () {
-						if (map._popup) map._popup.remove();
-					})
+					// .on('remove', function () {
+						//if (map._popup) map._popup.remove();
+					// })
 					.setIcon(myIcon);
 			});
 			firesOverlay.clearLayers();
