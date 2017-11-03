@@ -137,23 +137,12 @@ var protocol = location.protocol === 'file:' ? 'http:' : location.protocol,
 	baseLayers = {
 		// 'Карта': bounds ? L.tileLayer(url) : L.TileLayer.boundaryCanvas(url, {boundary: irk.features[0].geometry}),
 		'Карта': L.tileLayer(url),
-		'Спутник': bounds ? L.tileLayer(url1) : L.TileLayer.boundaryCanvas(url1, {boundary: clipJSON})
+		'Спутник': L.TileLayer.boundaryCanvas(url1, {boundary: clipJSON})
 	},
 	overlayes = {
 		'Пожары': firesOverlay,
 		'Границы районов': regOverlay,
-		'Кадастр': L.tileLayer.wms('//pkk5.rosreestr.ru/arcgis/rest/services/Cadastre/Cadastre/MapServer/export', {
-			layers: 'show:0,1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,23,24,29,30,31,32,33,34,35,38,39',
-			format: 'PNG32',
-			f: 'image',
-			dpi: 96,
-			imageSR: 102100,
-			bboxSR: 102100,
-			tileSize: 1024,
-			size: '1024,1024',
-			zIndex: 1000,
-			transparent: true
-		})
+		'Кадастр': publicInterface.afterViewer({}, map)
 	};
 
 baseLayers['Карта'].addTo(map);
