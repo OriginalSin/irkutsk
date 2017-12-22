@@ -12,7 +12,7 @@ var blm = map.gmxBaseLayersManager;
 blm.initDefaults({srs: 3857}).then(function() {
 	var baseLayers = blm.getAll().map(function(baseLayer) { return baseLayer.id; });
 	var satellite = blm.get('satellite'),
-		sat1 = L.tilelayer('//maps.kosmosnimki.ru/TileService.ashx?request=getTile&map=PLDYO&LayerName=63E083C0916F4414A2F6B78242F56CA6&z={z}&x={x}&y={y}&ftc=osm&srs=3857&apikey=AYU65737MA'),
+		sat1 = L.tileLayer('//maps.kosmosnimki.ru/TileService.ashx?request=getTile&map=PLDYO&LayerName=63E083C0916F4414A2F6B78242F56CA6&z={z}&x={x}&y={y}&ftc=osm&srs=3857&apikey=AYU65737MA'),
 		slope = blm.get('slope');
 	L.control.iconLayers([
 		{
