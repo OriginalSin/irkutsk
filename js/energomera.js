@@ -19,17 +19,16 @@ blm.add('satellite', {
 });
 blm.setActiveIDs(['slope', 'satellite']);
 blm.setCurrentID('satellite');
-var satellite = blm.get('satellite'),
-	slope = blm.get('slope');
 L.control.iconLayers([
 	{
-		title: satellite.options.rus,
-		icon: satellite.options.icon,
-		layer: sat1
+		title: 'Уклоны',
+		icon: '//maps.kosmosnimki.ru/api/img/baseLayers/basemap_relief_slope.png',
+		description: '<img src = "//maps.kosmosnimki.ru/api/img/baseLayers/basemap_relief_slope_legend.svg"></img>',
+		layer: slope
 	},
 	{
-		title: slope.options.rus,
-		icon: slope.options.icon,
-		layer: slope
+		title: 'Снимки',
+		icon: '//maps.kosmosnimki.ru/api/img/baseLayers/basemap_satellite.png',
+		layer: sat1
 	}
 ], {}).addTo(map);
