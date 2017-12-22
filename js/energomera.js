@@ -10,7 +10,7 @@ var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 L.gmx.loadMap('F4BEA507CF0A416081C21300AF0AD68A', {leafletMap: map});
 var blm = map.gmxBaseLayersManager;
 var sat1 = L.tileLayer('//maps.kosmosnimki.ru/TileService.ashx?request=getTile&map=PLDYO&LayerName=63E083C0916F4414A2F6B78242F56CA6&z={z}&x={x}&y={y}&srs=3857&apikey=AYU65737MA', {zIndex: -1000000}),
-	slope = L.tileLayer.Mercator('//{s}.tilecart.kosmosnimki.ru/ds/{z}/{x}/{y}.png');
+	slope = L.tileLayer.Mercator('http://{s}.tile.cart.kosmosnimki.ru/ds/{z}/{x}/{y}.png');
 blm.add('slope', {
 	layers: [slope]
 });
