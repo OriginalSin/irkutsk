@@ -9,6 +9,20 @@ var map = new L.Map(document.body.getElementsByClassName('map')[0], {
 });
 L.gmx.loadMap('F4BEA507CF0A416081C21300AF0AD68A', {leafletMap: map});
 var blm = map.gmxBaseLayersManager;
+blm.add('slope', {
+	layers: [
+        L.tileLayer.Mercator('//{s}.tilecart.kosmosnimki.ru/ds/{z}/{x}/{y}.png')
+	]
+});
+blm.add('satellite', {
+	layers: [
+		L.tileLayer('//maps.kosmosnimki.ru/TileService.ashx?request=getTile&map=PLDYO&LayerName=63E083C0916F4414A2F6B78242F56CA6&z={z}&x={x}&y={y}&srs=3857&apikey=AYU65737MA', {zIndex: -1000000})
+	]
+});
+blm.setActiveIDs(['slope', 'satellite']);
+blm.setCurrentID('satellite');
+L.control.iconLayers().addTo(map);
+/*
 blm.initDefaults({srs: 3857}).then(function() {
 	var baseLayers = blm.getAll().map(function(baseLayer) { return baseLayer.id; });
 	var satellite = blm.get('satellite'),
@@ -26,6 +40,7 @@ blm.initDefaults({srs: 3857}).then(function() {
 			layer: slope
 		}
 	], {}).addTo(map);
-	blm.setActiveIDs(baseLayers).setCurrentID('satellite');
+	//blm.setActiveIDs(baseLayers).setCurrentID('satellite');
 
 });
+*/
